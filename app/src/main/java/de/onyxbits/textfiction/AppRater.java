@@ -73,7 +73,8 @@ class AppRater implements DialogInterface.OnClickListener {
 		if (launch_count >= LAUNCHES_UNTIL_PROMPT) {
 			if (System.currentTimeMillis() >= date_firstLaunch
 					+ (DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)) {
-				showRateDialog(ctx);
+				// ToDo: more obvious build setting that this is disabled.
+				// showRateDialog(ctx);
 			}
 		}
 	}

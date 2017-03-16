@@ -18,6 +18,9 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
+import com.wakereality.textfiction.SwitchEngineProviders;
+import com.wakereality.textfiction.ThunderwordSpot;
+
 /**
  * Shows the list of installed games, provides the means to start, delete and
  * import them.
@@ -34,9 +37,9 @@ public class LibraryFragment extends Fragment implements
 	 * The Adapter which will be used to populate the ListView/GridView with
 	 * Views.
 	 */
-	private LibraryAdapter mAdapter;
+	protected LibraryAdapter mAdapter;
 
-	private ArrayList<File> games;
+	protected ArrayList<File> games;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -50,7 +53,7 @@ public class LibraryFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		games = new ArrayList<File>();
-		mAdapter = new LibraryAdapter(getActivity(), 0, games);
+		mAdapter = SwitchEngineProviders.getLibraryAdapter(getActivity(), 0, games);
 		mAdapter.setStripSuffix(true);
 	}
 
@@ -82,7 +85,8 @@ public class LibraryFragment extends Fragment implements
 				return true;
 			}
 			case R.id.mi_import: {
-				ImportTask.showSelectDialog(this);
+				ImportTask importTask = SwitchEngineProviders.getImportTask();
+				importTask.showSelectDialog(this, 0 /* Downloads Folder */);
 				return true;
 			}
 		}
@@ -119,6 +123,7 @@ public class LibraryFragment extends Fragment implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		ThunderwordSpot.useRemoteGameActivity = false;
 		File game = (File) mAdapter.getItem(position);
 		Intent intent = new Intent(getActivity(), GameActivity.class);
 		intent.putExtra(GameActivity.LOADFILE, game.getAbsolutePath());

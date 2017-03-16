@@ -6,6 +6,7 @@ import org.json.JSONArray;
 
 import de.onyxbits.textfiction.FileUtil;
 import de.onyxbits.textfiction.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,12 +18,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ViewFlipper;
+
 
 /**
  * UI interface between the player and the engine's input buffer.
@@ -36,17 +39,20 @@ public class InputFragment extends Fragment implements OnClickListener,
 	 */
 	public static final String CMDFILE = "quickcommands.json";
 
-	private EditText cmdLine;
+	protected EditText cmdLine;
 	private ImageButton submit;
 	private ImageButton expand;
+	private ImageButton expandKeymode;
 	private LinearLayout buttonBar;
-	private ViewFlipper flipper;
+	protected ViewFlipper flipper;
 
-	private ImageButton forwards;
-	private ImageButton left;
-	private ImageButton right;
-	private ImageButton up;
-	private ImageButton down;
+	protected ImageButton forwards;
+	protected ImageButton left;
+	protected ImageButton right;
+	protected ImageButton up;
+	protected ImageButton down;
+	protected Button keyboardLetter0;
+	protected Button keyboardLetter1;
 
 	// Magic numbers! See: §3.8 of the zmachine standard document.
 	public static final char[] C_UP = { 129 };
@@ -54,11 +60,12 @@ public class InputFragment extends Fragment implements OnClickListener,
 	public static final char[] C_LEFT = { 131 };
 	public static final char[] C_RIGHT = { 132 };
 	public static final char[] ENTER = { 13 };
+	public static final char[] SPACE = { 32 };
 	public static final char[] DELETE = { 8 };
 
-	private boolean hasVerb = false;
+	protected boolean hasVerb = false;
 
-	private InputProcessor inputProcessor;
+	protected InputProcessor inputProcessor;
 	private boolean autoCollapse;
 
 	public InputFragment() {
@@ -73,9 +80,11 @@ public class InputFragment extends Fragment implements OnClickListener,
 		cmdLine = (EditText) flipper.findViewById(R.id.userinput);
 		submit = (ImageButton) flipper.findViewById(R.id.submit);
 		expand = (ImageButton) flipper.findViewById(R.id.expand);
+		expandKeymode = (ImageButton) flipper.findViewById(R.id.expand_keymode);
 		submit.setOnClickListener(this);
 		cmdLine.setOnEditorActionListener(this);
 		expand.setOnClickListener(this);
+		expandKeymode.setOnClickListener(this);
 
 		forwards = (ImageButton) flipper.findViewById(R.id.forwards);
 		down = (ImageButton) flipper.findViewById(R.id.cursor_down);
@@ -121,9 +130,9 @@ public class InputFragment extends Fragment implements OnClickListener,
 			Log.w(getClass().getName(), e);
 		}
 		flipper.setInAnimation(AnimationUtils.loadAnimation(ctx,
-				R.animator.slide_in_right));
+				R.anim.slide_in_right));
 		flipper.setOutAnimation(AnimationUtils.loadAnimation(ctx,
-				R.animator.slide_out_left));
+				R.anim.slide_out_left));
 
 		return flipper;
 	}
@@ -174,6 +183,10 @@ public class InputFragment extends Fragment implements OnClickListener,
 			return;
 		}
 		if (v == expand) {
+			getActivity().openOptionsMenu();
+			return;
+		}
+		if (v == expandKeymode) {
 			getActivity().openOptionsMenu();
 			return;
 		}
@@ -259,13 +272,39 @@ public class InputFragment extends Fragment implements OnClickListener,
 
 	@Override
 	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		// Issue #17 https://github.com/onyxbits/TextFiction/issues/17
+		if (event != null) {
+			if (event.getAction() == KeyEvent.ACTION_UP) {
+				if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+					// Direct requestFocus() does not seem to change behavior. Posting a Runnable
+					//  without delay seems to restore focus on hard keyboard use.
+					cmdLine.post(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								cmdLine.requestFocus();
+							} catch (Exception e) {
+								Log.e("InputFragment", "Exception cmdLine.requestFocus() ", e);
+							}
+						}
+					});
+				} else {
+					// Log.i("InputFragment", "[inputFocus] keycode " + event.getKeyCode());
+				}
+				// skip sending to fiction engine, we only want the key down.
+				return false;
+			}
+		}
+
 		executeCommand();
 		return !autoCollapse;
 	}
 
-	private void executeCommand() {
+	protected void executeCommand() {
 		inputProcessor.executeCommand((cmdLine.getText().toString() + "\n")
 				.toCharArray());
 	}
 
+	public void setupLimitedKeyboard() {
+	}
 }

@@ -12,18 +12,22 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.wakereality.textfiction.SwitchEngineProviders;
+
 /**
  * Helper task for the LibraryFragment that takes care of copying games from the
  * download directory to the library directory.
  */
-class ImportTask extends AsyncTask<Object, Integer, Exception> implements
+public class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 		DialogInterface.OnClickListener,
 		DialogInterface.OnMultiChoiceClickListener, FilenameFilter {
 
 	/**
 	 * Supported filename suffixes
 	 */
-	public static final String[] SUFFIXES = { "Z3", "Z5", "Z8", "ZBLORB" };
+	public String[] getSUFFIXES() {
+		return new String[] { "Z3", "Z5", "Z8", "ZBLORB" };
+	}
 
 	/**
 	 * The import candidates from which the user may choose.
@@ -45,7 +49,7 @@ class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 	 */
 	private LibraryFragment master;
 
-	private ImportTask() {
+	public ImportTask() {
 	}
 
 	@Override
@@ -113,8 +117,8 @@ class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 	 * @param files
 	 *          files to import
 	 */
-	public static void importGames(LibraryFragment master, File[] files) {
-		ImportTask task = new ImportTask();
+	public void importGames(LibraryFragment master, File[] files) {
+		ImportTask task = SwitchEngineProviders.getImportTask();
 		task.master = master;
 		task.toImport = files;
 		task.selected = new boolean[files.length];
@@ -129,14 +133,23 @@ class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 	 * @param master
 	 *          the fragment to report back to in case something was imported.
 	 */
-	public static void showSelectDialog(LibraryFragment master) {
+	public void showSelectDialog(LibraryFragment masterFrag, int folderPick) {
+		switch (folderPick) {
+			case 0:
+				showSelectDialogForFileDirectory(masterFrag, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+				break;
+			case 1:
+				showSelectDialogForFileDirectory(masterFrag, new File("/sdcard/Incant_Stories/setA"));
+				break;
+		}
+	}
 
-		ImportTask task = new ImportTask();
-		task.toImport = Environment.getExternalStoragePublicDirectory(
-				Environment.DIRECTORY_DOWNLOADS).listFiles(task);
+	public void showSelectDialogForFileDirectory(LibraryFragment masterFrag, File directoryRoot) {
+		ImportTask task = SwitchEngineProviders.getImportTask();
+		task.toImport = directoryRoot.listFiles(task);
 
 		if (task.toImport == null || task.toImport.length == 0) {
-			Toast.makeText(master.getActivity(), R.string.msg_nothing_to_import,
+			Toast.makeText(masterFrag.getActivity(), R.string.msg_nothing_to_import,
 					Toast.LENGTH_SHORT).show();
 			return;
 		}
@@ -145,13 +158,13 @@ class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 
 		String[] names = new String[task.toImport.length];
 		task.selected = new boolean[task.toImport.length];
-		task.master = master;
+		task.master = masterFrag;
 
 		for (int i = 0; i < task.toImport.length; i++) {
 			names[i] = task.toImport[i].getName();
 		}
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(master.getActivity());
+		AlertDialog.Builder builder = new AlertDialog.Builder(masterFrag.getActivity());
 		builder.setTitle(R.string.title_select_import)
 				.setMultiChoiceItems(names, null, task)
 				.setPositiveButton(android.R.string.ok, task).create().show();
@@ -160,7 +173,7 @@ class ImportTask extends AsyncTask<Object, Integer, Exception> implements
 	@Override
 	public boolean accept(File dir, String filename) {
 		boolean ret = false;
-		for (String suffix : SUFFIXES) {
+		for (String suffix : getSUFFIXES()) {
 			if (filename.toUpperCase().endsWith(suffix)) {
 				ret = true;
 				break;

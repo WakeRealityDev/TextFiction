@@ -9,7 +9,7 @@ import android.text.SpannableString;
  * @author patrick
  * 
  */
-class StoryItem {
+public class StoryItem {
 
 	/**
 	 * A message from the narrator

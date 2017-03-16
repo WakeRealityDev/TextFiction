@@ -18,6 +18,8 @@ import de.onyxbits.textfiction.zengine.ZState;
 import de.onyxbits.textfiction.zengine.ZStatus;
 import de.onyxbits.textfiction.zengine.ZWindow;
 
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -53,6 +55,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+
 /**
  * The activity where actual gameplay takes place.
  * 
@@ -74,6 +77,12 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	public static final String LOADFILE = "loadfile";
 
 	/**
+	 * Optionally, the name of the game may be passed (if none is passed, the
+	 * filename is used as a title).
+	 */
+	public static final String GAMETITLE = "gametitle";
+
+	/**
 	 * How many items to keep in the messagebuffer at most. Note: this should be
 	 * an odd number so the log starts with a narrator entry.
 	 */
@@ -87,27 +96,27 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	/**
 	 * Displays the message log
 	 */
-	private ListView storyBoard;
+	protected ListView storyBoard;
 
 	/**
 	 * Adapter for the story list
 	 */
-	private StoryAdapter messages;
+	protected StoryAdapter messages;
 
 	/**
 	 * The "upper window" of the z-machine containing the status part
 	 */
-	private TextView statusWindow;
+	protected TextView statusWindow;
 
 	/**
 	 * Holds stuff that needs to survive config changes (e.g. screen rotation).
 	 */
-	private RetainerFragment retainerFragment;
+	protected RetainerFragment retainerFragment;
 
 	/**
 	 * The input prompt
 	 */
-	private InputFragment inputFragment;
+	protected InputFragment inputFragment;
 
 	/**
 	 * On screen compass
@@ -135,13 +144,13 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	private int pendingAction = PENDING_NONE;
 
 	/**
-	 * Words we are highligting in the story
+	 * Words we are highlighting in the story
 	 */
-	private String[] highlighted;
+	protected String[] highlighted;
 
-	private SharedPreferences prefs;
-	private TextToSpeech speaker;
-	private boolean ttsReady;
+	protected SharedPreferences prefs;
+	protected TextToSpeech speaker;
+	protected boolean ttsReady;
 	private WordExtractor wordExtractor;
 
 	private ProgressBar loading;
@@ -149,16 +158,19 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		if (prefs.getBoolean("removebar", true)) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		}
 
 		// Set the custom theme
 		try {
 			Field field = R.style.class.getField(prefs.getString("theme", ""));
 			setTheme(field.getInt(null));
-		}
-		catch (Exception e) {
+		} catch (NoSuchFieldException e) {
+			Log.w(getClass().getName(), "NoSuchFieldException trying to setTheme");
+		} catch (Exception e) {
 			Log.w(getClass().getName(), e);
 		}
 
@@ -210,6 +222,15 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 		}
 		highlighted = retainerFragment.highlighted.toArray(new String[0]);
 
+		if (! prefs.getBoolean("removebar", true)) {
+			String title = getIntent().getStringExtra(GAMETITLE);
+			if (title == null) {
+				title = storyFile.getName();
+			}
+			setTitle(title);
+			setupActionBar(title);
+		}
+
 		storyBoard = (ListView) content.findViewById(R.id.storyboard);
 		// storyBoard.setVerticalFadingEdgeEnabled(true);
 		wordExtractor = new WordExtractor(this);
@@ -227,6 +248,11 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 		speaker = new TextToSpeech(this, this);
 		onSharedPreferenceChanged(prefs, "");
 		dimSoftButtonsIfPossible();
+
+		onCreateExtras();
+	}
+
+	public void onCreateExtras() {
 	}
 
 	@SuppressLint("NewApi")
@@ -286,6 +312,27 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 		super.onDestroy();
 	}
 
+	/**
+	 * Set up the {@link android.app.ActionBar}, if the API is available.
+	 *
+	 * @param subTitle
+	 *          should be the game name
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setupActionBar(String subTitle) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			if (getActionBar() != null) {
+				// getActionBar().setDisplayHomeAsUpEnabled(true);
+				getActionBar().setSubtitle(subTitle);
+				if (prefs.getBoolean("hideactionbar", true)) {
+					getActionBar().hide();
+				}
+			}
+
+			setTitle(R.string.app_name);
+		}
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -303,6 +350,10 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 		menu.findItem(R.id.mi_save).setEnabled(rest && inputFragment.isPrompt());
 		menu.findItem(R.id.mi_restore).setEnabled(rest && inputFragment.isPrompt());
 		menu.findItem(R.id.mi_restart).setEnabled(rest);
+		// Only show menu if preferences say, reference Issue #15 feature addition.
+		if (! prefs.getBoolean("preventbackbutton", false)) {
+			menu.findItem(R.id.mi_quit_story).setEnabled(false);
+		}
 		return true;
 	}
 
@@ -334,7 +385,11 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 				}
 				return true;
 			}
-
+			case R.id.mi_quit_story: {
+				// User requested in Issue #15 option to re-route back button.
+				super.onBackPressed();
+				return true;
+			}
 			case R.id.mi_clear_log: {
 				retainerFragment.messageBuffer.clear();
 				messages.notifyDataSetChanged();
@@ -397,6 +452,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 		}
 	}
 
+
 	/**
 	 * Callback: publish results after the engine has run
 	 */
@@ -426,6 +482,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 			statusWindow.setText(tmp);
 			retainerFragment.upperWindow = tmp;
 		}
+
 		upper.retrieved();
 
 		// Evaluate story progress
@@ -463,6 +520,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 					reg = reg.next;
 				}
 			}
+
 			highlight(stmp, highlighted);
 			try {
 				retainerFragment.messageBuffer.add(new StoryItem(stmp, StoryItem.NARRATOR));
@@ -506,7 +564,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	/**
 	 * Show the correct prompt.
 	 */
-	private void figurePromptStyle() {
+	protected void figurePromptStyle() {
 		if (retainerFragment.engine.getRunState() == ZMachine.STATE_WAIT_CHAR
 				&& inputFragment.isPrompt()) {
 			inputFragment.toggleInput();
@@ -521,7 +579,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	 * Enable/Disable menu items
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void figureMenuState() {
+	protected void figureMenuState() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			invalidateOptionsMenu();
 		}
@@ -531,17 +589,17 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	 * Make either the storyboard or the statusscreen visible
 	 * 
 	 * @param showstory
-	 *          true to swtich to the story view, false to swtich to the status
+	 *          true to switch to the story view, false to switch to the status
 	 *          screen. nothing happens if the desired view is already showing.
 	 */
-	private void flipView(boolean showstory) {
+	protected void flipView(boolean showstory) {
 		View now = windowFlipper.getCurrentView();
 
 		if (showstory) {
 			if (now != storyBoard) {
-				windowFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.animator.slide_in_right));
+				windowFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
 				windowFlipper
-						.setOutAnimation(AnimationUtils.loadAnimation(this, R.animator.slide_out_left));
+						.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
 				windowFlipper.showPrevious();
 			}
 		}
@@ -721,7 +779,7 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	 * @param words
 	 *          the words to underline (all lowercase!)
 	 */
-	private static void highlight(SpannableString span, String... words) {
+	protected static void highlight(SpannableString span, String... words) {
 		UnderlineSpan old[] = span.getSpans(0, span.length(), UnderlineSpan.class);
 		for (UnderlineSpan del : old) {
 			span.removeSpan(del);
@@ -790,5 +848,32 @@ public class GameActivity extends FragmentActivity implements DialogInterface.On
 	@Override
 	public void onOptionsMenuClosed(Menu m) {
 		dimSoftButtonsIfPossible();
+	}
+
+	// http://stackoverflow.com/questions/25831634/android-openoptionsmenu-does-nothing-in-kitkat
+	@Override
+	public void openOptionsMenu() {
+		super.openOptionsMenu();
+		Configuration config = getResources().getConfiguration();
+		if ((config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) > Configuration.SCREENLAYOUT_SIZE_LARGE) {
+			int originalScreenLayout = config.screenLayout;
+			config.screenLayout = Configuration.SCREENLAYOUT_SIZE_LARGE;
+			super.openOptionsMenu();
+			config.screenLayout = originalScreenLayout;
+		} else {
+			super.openOptionsMenu();
+		}
+	}
+
+	/*
+	User requested feature in issue #15 https://github.com/onyxbits/TextFiction/issues/15
+	*/
+	@Override
+	public void onBackPressed() {
+		if (! prefs.getBoolean("preventbackbutton", false)) {
+			super.onBackPressed();
+		} else {
+			Toast.makeText(this, "You set option to prevent [Back], use menu", Toast.LENGTH_SHORT).show();
+		}
 	}
 }

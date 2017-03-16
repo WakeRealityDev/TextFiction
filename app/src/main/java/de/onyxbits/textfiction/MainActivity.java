@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.wakereality.textfiction.SwitchEngineProviders;
+
 /**
  * From this activity, the player can manage his/her library and start games.
  * 
@@ -34,7 +36,9 @@ public class MainActivity extends FragmentActivity {
 			Field field = R.style.class.getField(prefs.getString("theme", ""));
 			setTheme(field.getInt(null));
 		}
-		catch (Exception e) {
+		catch (NoSuchFieldException e) {
+			Log.w(getClass().getName(), "NoSuchFieldException trying to setTheme");
+		} catch (Exception e) {
 			Log.w(getClass().getName(), e);
 		}
 		super.onCreate(savedInstanceState);
@@ -46,8 +50,13 @@ public class MainActivity extends FragmentActivity {
 			LibraryFragment frag = (LibraryFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.fragment_library);
 			File[] f = { new File(game.getPath()) };
-			ImportTask.importGames(frag, f);
+			doImportGames(frag, f);
 		}
+	}
+
+	public void doImportGames(LibraryFragment frag, File[] f) {
+		ImportTask importTask = SwitchEngineProviders.getImportTask();
+		importTask.importGames(frag, f);
 	}
 
 	@Override

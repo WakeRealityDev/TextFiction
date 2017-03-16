@@ -22,3 +22,8 @@ https://play.google.com/store/apps/details?id=de.onyxbits.textfiction
 Android Studio 2.3 conversion
 ===============================
 In March 2017, this project structure was converted to Android Studio 2.3 in this git branch.
+
+
+WakeReality_Base_Changes0 branch
+=================================
+This branch has some of Wake Reality's changes that were made to the "Text Fiction - Playable Novels" app since it's previous Play Store release.

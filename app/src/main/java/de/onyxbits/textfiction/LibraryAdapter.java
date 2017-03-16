@@ -14,11 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-class LibraryAdapter extends ArrayAdapter<File> implements OnClickListener,
+public class LibraryAdapter extends ArrayAdapter<File> implements OnClickListener,
 		android.content.DialogInterface.OnClickListener {
 
 	private File deleteMe;
-	private boolean stripSuffix;
+	protected boolean stripSuffix;
 
 	public LibraryAdapter(Context context, int textViewResourceId,
 			ArrayList<File> stories) {
@@ -62,6 +62,9 @@ class LibraryAdapter extends ArrayAdapter<File> implements OnClickListener,
 		}
 	}
 
+	/*
+	OnClick specific to the Delete dialog, not picking entries.
+	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
