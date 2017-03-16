@@ -10,10 +10,15 @@ The icons for the commandbuttons are taken from:
 http://typicons.com/
 
 External dependencies:
-Andoir support library
+Android support library
 
 Homepage:
 http://www.onyxbits.de/textfiction
 
 Google Play:
 https://play.google.com/store/apps/details?id=de.onyxbits.textfiction
+
+
+Android Studio 2.3 conversion
+===============================
+In March 2017, this project structure was converted to Android Studio 2.3 in this git branch.
