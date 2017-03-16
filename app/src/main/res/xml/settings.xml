@@ -47,9 +47,24 @@
 			android:title="@string/smoothscrolling_title" />
 		<CheckBoxPreference
 			android:defaultValue="false"
+			android:key="preventbackbutton"
+			android:summary="@string/preventbackbutton_summary"
+			android:title="@string/preventbackbutton_title" />
+		<CheckBoxPreference
+			android:defaultValue="false"
 			android:key="autocollapse"
 			android:title="@string/autocollapse_keyboard"
 			android:summary="@string/hide_the_keyboard_when_pressing_done" />
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="hideactionbar"
+			android:title="@string/hide_action_bar_gameactivity"
+			android:summary="@string/hide_action_bar_gameactivity_summary" />
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="removebar"
+			android:title="@string/remove_bar_gameactivity"
+			android:summary="@string/remove_bar_gameactivity_summary" />
 	</PreferenceCategory>
 
 </PreferenceScreen>

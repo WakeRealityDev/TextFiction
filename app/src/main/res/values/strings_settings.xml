@@ -45,21 +45,28 @@
 		<item name="1">Medium</item>
 		<item name="2">Large</item>
 	</string-array>
-		<string name="title_theme">Theme</string>
-		<string name="font_title">Font</string>
-		<string name="fontsize_title">Fontsize</string>
-		<string name="category_appearance">Appearance</string>
-		<string name="category_audio">Audio</string>
-		<string name="keyclick_summary">Click when words are touched in a story item</string>
-		<string name="keyclick_title">Acoustic Feedback</string>
-		<string name="narrator_summary">Automatically read out new story items (narration can always be stopped by touching empty space within the item and restarted through a long touch)</string>
-		<string name="narrator_title">Text to Speech</string>
-		<string name="category_misc">Miscellaneous</string>
-		<string name="smoothscrolling_title">Smooth scrolling</string>
-		<string name="smoothscrolling_summary">Scroll the storyboard smoothly</string>
-		<string name="autocollapse_keyboard">Autocollapse Keyboard</string>
-		<string name="hide_the_keyboard_when_pressing_done">Hide the keyboard when pressing \'Done\'</string>
-		<string name="msg_question_restart">Changing the theme requires a restart to take effect. Restart now?</string>
-	
+
+	<string name="title_theme">Theme</string>
+	<string name="font_title">Font</string>
+	<string name="fontsize_title">Fontsize</string>
+	<string name="category_appearance">Appearance</string>
+	<string name="category_audio">Audio</string>
+	<string name="keyclick_summary">Click when words are touched in a story item</string>
+	<string name="keyclick_title">Acoustic Feedback</string>
+	<string name="narrator_summary">Automatically read out new story items (narration can always be stopped by touching empty space within the item and restarted through a long touch)</string>
+	<string name="narrator_title">Text to Speech</string>
+	<string name="category_misc">Miscellaneous</string>
+	<string name="smoothscrolling_title">Smooth scrolling</string>
+	<string name="smoothscrolling_summary">Scroll the storyboard smoothly</string>
+	<string name="autocollapse_keyboard">Autocollapse Keyboard</string>
+	<string name="hide_the_keyboard_when_pressing_done">Hide the keyboard when pressing \'Done\'</string>
+	<string name="msg_question_restart">Changing the theme requires a restart to take effect. Restart now?</string>
+
+	<string name="preventbackbutton_title">Prevent Back</string>
+	<string name="preventbackbutton_summary">While playing a story, prevent back button as exiting story and require menu. Requested by app user to prevent accidental press.</string>
+	<string name="remove_bar_gameactivity">Remove Navigation Bar during Play</string>
+	<string name="remove_bar_gameactivity_summary">Removes the top navigation bar during story play giving more screen space for story content (immersive mode)</string>
+	<string name="hide_action_bar_gameactivity">Hide Action Bar during Play</string>
+	<string name="hide_action_bar_gameactivity_summary">Removes the top title bar and menu during story play giving more screen space for story content (step toward immersive mode)</string>
 
 </resources>

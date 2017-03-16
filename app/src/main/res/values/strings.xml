@@ -34,6 +34,7 @@
 	<string name="mi_restart">Restart</string>
 	<string name="mi_browse">Browse Catalog</string>
 	<string name="mi_import">Import</string>
+	<string name="mi_quit_story">Quit story</string>
 	<string name="title_select_import">Select games to import</string>
 	<string name="msg_failure_import">Failure!</string>
 	<string name="msg_nothing_to_import">No games found in the download folder!</string>
