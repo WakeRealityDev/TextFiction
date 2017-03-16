@@ -1,0 +1,130 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .gitignore
+* LICENSE
+* README.md
+* art/
+* art/alice_box.9.png
+* art/alice_box.png
+* art/alice_box.svg
+* art/alice_bubble_left.9.png
+* art/alice_bubble_left.png
+* art/alice_bubble_left.svg
+* art/alice_bubble_right.9.png
+* art/alice_bubble_right.png
+* art/alice_bubble_right.svg
+* art/alice_inputbox.9.png
+* art/alice_inputbox.png
+* art/dinah_bubble_left.9.png
+* art/dinah_bubble_left.png
+* art/dinah_bubble_left.svg
+* art/dinah_bubble_right.9.png
+* art/dinah_bubble_right.png
+* art/dinah_bubble_right.svg
+* art/dinah_button_down.9.png
+* art/dinah_button_down.png
+* art/dinah_button_down.svg
+* art/dinah_button_up.9.png
+* art/dinah_button_up.png
+* art/dinah_button_up.svg
+* art/export.sh
+* art/ic_compass_blank.svg
+* art/ic_launcher.svg
+* art/lucy_box.9.png
+* art/lucy_box.png
+* art/lucy_box.svg
+* art/lucy_bubble_left.9.png
+* art/lucy_bubble_left.png
+* art/lucy_bubble_left.svg
+* art/lucy_bubble_right.9.png
+* art/lucy_bubble_right.png
+* art/lucy_bubble_right.svg
+* art/lucy_inputbox.9.png
+* art/lucy_inputbox.png
+* art/nemo_box.9.png
+* art/nemo_box.png
+* art/nemo_box.svg
+* art/nemo_bubble_left.9.png
+* art/nemo_bubble_left.png
+* art/nemo_bubble_left.svg
+* art/nemo_bubble_right.9.png
+* art/nemo_bubble_right.png
+* art/nemo_bubble_right.svg
+* art/proto_bubble.svg
+* art/shadedregion.9.png
+* art/shadedregion.png
+* art/typicons/
+* art/typicons/export.sh
+* art/typicons/ic_action_down.svg
+* art/typicons/ic_action_forward.svg
+* art/typicons/ic_action_keyboard.svg
+* art/typicons/ic_action_left.svg
+* art/typicons/ic_action_right.svg
+* art/typicons/ic_action_up.svg
+* art/typicons/ic_action_user0.svg
+* art/typicons/ic_action_user1.svg
+* art/typicons/ic_action_user10.svg
+* art/typicons/ic_action_user11.svg
+* art/typicons/ic_action_user12.svg
+* art/typicons/ic_action_user13.svg
+* art/typicons/ic_action_user14.svg
+* art/typicons/ic_action_user15.svg
+* art/typicons/ic_action_user16.svg
+* art/typicons/ic_action_user17.svg
+* art/typicons/ic_action_user18.svg
+* art/typicons/ic_action_user19.svg
+* art/typicons/ic_action_user2.svg
+* art/typicons/ic_action_user20.svg
+* art/typicons/ic_action_user21.svg
+* art/typicons/ic_action_user22.svg
+* art/typicons/ic_action_user23.svg
+* art/typicons/ic_action_user24.svg
+* art/typicons/ic_action_user25.svg
+* art/typicons/ic_action_user26.svg
+* art/typicons/ic_action_user27.svg
+* art/typicons/ic_action_user28.svg
+* art/typicons/ic_action_user29.svg
+* art/typicons/ic_action_user3.svg
+* art/typicons/ic_action_user30.svg
+* art/typicons/ic_action_user31.svg
+* art/typicons/ic_action_user4.svg
+* art/typicons/ic_action_user5.svg
+* art/typicons/ic_action_user6.svg
+* art/typicons/ic_action_user7.svg
+* art/typicons/ic_action_user8.svg
+* art/typicons/ic_action_user9.svg
+* custom_rules.xml
+* proguard-project.txt
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app/src/main/AndroidManifest.xml
+* assets/ => app/src/main/assets/
+* res/ => app/src/main/res/
+* src/ => app/src/main/java/
+* src/de/onyxbits/textfiction/input/package.html => app/src/main/resources/de/onyxbits/textfiction/input/package.html
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
